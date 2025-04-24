@@ -15,10 +15,6 @@ public class SwaggerServerConfig {
 
     @Bean
     public OpenAPI customOpenAPI() {
-        Server localhost = new Server();
-        localhost.setUrl("http://localhost:8080");
-        localhost.setDescription("Local server");
-
         Server production = new Server();
         production.setUrl("https://uhvati-termin-production.up.railway.app");
         production.setDescription("Production server");
@@ -26,7 +22,7 @@ public class SwaggerServerConfig {
         final String securitySchemeName = "bearerAuth";
 
         return new OpenAPI()
-                .servers(List.of(localhost, production))
+                .servers(List.of(production))
                 .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
                 .components(new Components().addSecuritySchemes(securitySchemeName,
                         new SecurityScheme()
