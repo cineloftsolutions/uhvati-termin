@@ -10,6 +10,7 @@ import com.cineloftsolutions.uhvati_termin.repository.RoleRepository;
 import com.cineloftsolutions.uhvati_termin.repository.UserRepository;
 import com.cineloftsolutions.uhvati_termin.service.AuthService;
 import com.cineloftsolutions.uhvati_termin.service.JwtTokenService;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -130,11 +131,17 @@ public class AuthServiceImpl implements AuthService {
                     "refreshToken", request.getRefreshToken()
             ));
 
+        } catch (ExpiredJwtException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of(
+                    "status", 403,
+                    "error", "Token istekao",
+                    "message", "Vaš osvežavajući token je istekao. Molimo prijavite se ponovo."
+            ));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of(
                     "status", 403,
                     "error", "Neuspešno osvežavanje",
-                    "message", "Osvežavanje tokena nije uspelo: " + e.getMessage()
+                    "message", "Greška tokom osvežavanja tokena: " + e.getMessage()
             ));
         }
     }
