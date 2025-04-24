@@ -1,4 +1,4 @@
-package com.cineloftsolutions.uhvati_termin.config;
+package com.cineloftsolutions.uhvati_termin.filter;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
