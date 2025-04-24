@@ -23,9 +23,4 @@ public class UserController {
     public User createUser(@RequestBody User user) {
         return userRepository.save(user);
     }
-
-    @GetMapping("/api/ping")
-    public String ping() {
-        return "Backend is working! ✅";
-    }
 }
