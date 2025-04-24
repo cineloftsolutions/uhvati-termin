@@ -1,69 +1,67 @@
 package com.cineloftsolutions.uhvati_termin.controller;
 
 import com.cineloftsolutions.uhvati_termin.dto.AuthRequestDTO;
-import com.cineloftsolutions.uhvati_termin.dto.AuthResponseDTO;
+import com.cineloftsolutions.uhvati_termin.dto.RefreshTokenDTO;
 import com.cineloftsolutions.uhvati_termin.dto.RegisterRequestDTO;
-import com.cineloftsolutions.uhvati_termin.entity.Role;
-import com.cineloftsolutions.uhvati_termin.entity.User;
-import com.cineloftsolutions.uhvati_termin.repository.RoleRepository;
-import com.cineloftsolutions.uhvati_termin.repository.UserRepository;
-import com.cineloftsolutions.uhvati_termin.util.JwtUtil;
+import com.cineloftsolutions.uhvati_termin.service.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Optional;
-
 @RestController
 @RequestMapping("/api/auth")
+@Tag(name = "Autentikacija", description = "API za registraciju, prijavu i osvežavanje tokena")
+@Validated
 public class AuthController {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final AuthService authService;
 
     @Autowired
-    private RoleRepository roleRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private JwtUtil jwtUtil;
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequestDTO request) {
-        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            return ResponseEntity.badRequest().body("Email already in use");
-        }
-
-        Role userRole = roleRepository.findByName("USER")
-                .orElseGet(() -> roleRepository.save(new Role(null, "USER")));
-
-        User user = new User();
-        user.setName(request.getName());
-        user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole(userRole);
-
-        userRepository.save(user);
-
-        String token = jwtUtil.generateToken(user.getEmail());
-        return ResponseEntity.ok(new AuthResponseDTO(token));
+    @Operation(
+            summary = "Registracija novog korisnika",
+            description = "Kreira novog korisnika i vraća JWT tokene (access i refresh token)"
+    )
+    public ResponseEntity<?> register(@RequestBody @Valid RegisterRequestDTO request) {
+        return authService.register(request);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthRequestDTO request) {
-        Optional<User> userOpt = userRepository.findByEmail(request.getEmail());
+    @Operation(
+            summary = "Prijava korisnika",
+            description = "Autentifikuje korisnika i vraća JWT tokene (access i refresh token)"
+    )
+    public ResponseEntity<?> login(@RequestBody @Valid AuthRequestDTO request) {
+        return authService.login(request);
+    }
 
-        if (userOpt.isEmpty() || !passwordEncoder.matches(request.getPassword(), userOpt.get().getPassword())) {
-            return ResponseEntity.status(401).body("Invalid credentials");
-        }
+    @PostMapping("/logout")
+    @Operation(
+            summary = "Odjava korisnika",
+            description = "Odjavljuje korisnika sa klijentske strane (brisanje refresh tokena na frontend-u)"
+    )
+    public ResponseEntity<?> logout(@Valid @RequestBody RefreshTokenDTO request) {
+        return authService.logout(request);
+    }
 
-        String token = jwtUtil.generateToken(request.getEmail());
-        return ResponseEntity.ok(new AuthResponseDTO(token));
+    @PostMapping("/refresh")
+    @Operation(
+            summary = "Osvežavanje JWT tokena",
+            description = "Vraća novi access token na osnovu važećeg refresh tokena"
+    )
+    public ResponseEntity<?> refresh(@Valid @RequestBody RefreshTokenDTO request) {
+        return authService.refreshToken(request);
     }
 }
+

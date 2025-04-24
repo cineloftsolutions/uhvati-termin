@@ -1,26 +1,35 @@
 package com.cineloftsolutions.uhvati_termin.controller;
 
+import com.cineloftsolutions.uhvati_termin.dto.UserDTO;
 import com.cineloftsolutions.uhvati_termin.entity.User;
 import com.cineloftsolutions.uhvati_termin.repository.UserRepository;
+import com.cineloftsolutions.uhvati_termin.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
+@Tag(name = "Korisnici", description = "API za upravljanje korisnicima")
 public class UserController {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserService userService;
 
-    @GetMapping
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
-    @PostMapping
-    public User createUser(@RequestBody User user) {
-        return userRepository.save(user);
+    @GetMapping
+    @Operation(
+            summary = "Dohvatanje svih korisnika",
+            description = "Vraća listu svih registrovanih korisnika"
+    )
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 }
