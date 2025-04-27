@@ -8,5 +8,12 @@
       <jdbc-url>jdbc:postgresql://yamabiko.proxy.rlwy.net:17151/postgres</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
+    <data-source source="LOCAL" name="uhvati-termin@localhost" uuid="79ce759d-84a4-40a7-b4a3-3b5aee29b323">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://localhost:5432/uhvati-termin</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>

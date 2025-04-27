@@ -30,5 +30,9 @@ public class RegisterRequestDTO {
     )
     @Schema(description = "Lozinka korisnika", example = "Lozinka123")
     private String password;
+
+    @NotNull(message = "Biznis ID je obavezan")
+    @Schema(description = "Biznis ID", example = "1")
+    private Long businessId;
 }
 

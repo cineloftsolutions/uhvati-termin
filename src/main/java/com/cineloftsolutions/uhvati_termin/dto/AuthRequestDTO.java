@@ -21,4 +21,8 @@ public class AuthRequestDTO {
     @Size(min = 6, max = 100, message = "Lozinka mora imati između 6 i 100 karaktera")
     @Schema(description = "Lozinka korisnika", example = "Lozinka123")
     private String password;
+
+    @NotNull(message = "Business ID je obavezan")
+    @Schema(description = "ID biznisa", example = "1")
+    private Long businessId;
 }

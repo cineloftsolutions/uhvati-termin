@@ -26,10 +26,12 @@ public class JwtTokenService {
         this.refreshTokenExpiration = refreshTokenExpiration;
     }
 
-    public String generateAccessToken(String email, String role) {
+    public String generateAccessToken(String email, String role, Long userId, Long businessId) {
         return Jwts.builder()
                 .subject(email)
                 .claim("role", role)
+                .claim("user_id", userId)
+                .claim("business_id", businessId)
                 .claim("type", "access")
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + accessTokenExpiration))
@@ -52,8 +54,18 @@ public class JwtTokenService {
         return Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload().getSubject();
     }
 
+    public Long extractBusinessId(String authorizationHeader) {
+        String token = authorizationHeader.substring(7);
+        return Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload().get("business_id", Long.class);
+    }
+
     public String extractRole(String token) {
         return Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload().get("role", String.class);
+    }
+
+    public Long extractUserId(String authorizationHeader) {
+        String token = authorizationHeader.substring(7);
+        return Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload().get("user_id", Long.class);
     }
 
     public boolean validateToken(String token, String email) {

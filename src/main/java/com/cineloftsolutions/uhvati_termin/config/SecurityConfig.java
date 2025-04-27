@@ -34,7 +34,8 @@ public class SecurityConfig {
                                 "/v3/api-docs",
                                 "/api-docs/swagger-config",
                                 "/swagger-resources/**",
-                                "/webjars/**"
+                                "/webjars/**",
+                                "/api/businesses/admin/create"
                         ).permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated()

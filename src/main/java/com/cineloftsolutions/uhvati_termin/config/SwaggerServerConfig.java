@@ -16,7 +16,7 @@ public class SwaggerServerConfig {
     @Bean
     public OpenAPI customOpenAPI() {
         Server production = new Server();
-        production.setUrl("https://uhvati-termin-production.up.railway.app");
+        production.setUrl("http://localhost:8080");
         production.setDescription("Production server");
 
         final String securitySchemeName = "bearerAuth";
