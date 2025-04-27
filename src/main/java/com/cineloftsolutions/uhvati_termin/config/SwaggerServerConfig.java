@@ -5,6 +5,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -13,11 +14,14 @@ import java.util.List;
 @Configuration
 public class SwaggerServerConfig {
 
+    @Value("${server.url}") String serverUrl;
+    @Value("${server.description}") String serverDescription;
+
     @Bean
     public OpenAPI customOpenAPI() {
         Server production = new Server();
-        production.setUrl("http://localhost:8080");
-        production.setDescription("Production server");
+        production.setUrl(serverUrl);
+        production.setDescription(serverDescription);
 
         final String securitySchemeName = "bearerAuth";
 
