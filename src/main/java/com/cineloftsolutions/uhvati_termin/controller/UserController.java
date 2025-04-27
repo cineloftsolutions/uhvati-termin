@@ -1,9 +1,6 @@
 package com.cineloftsolutions.uhvati_termin.controller;
 
-import com.cineloftsolutions.uhvati_termin.dto.CreateEmployeeDTO;
-import com.cineloftsolutions.uhvati_termin.dto.ReadUserDTO;
-import com.cineloftsolutions.uhvati_termin.dto.UpdateEmployeeDTO;
-import com.cineloftsolutions.uhvati_termin.dto.UpdateUserProfileDTO;
+import com.cineloftsolutions.uhvati_termin.dto.*;
 import com.cineloftsolutions.uhvati_termin.service.JwtTokenService;
 import com.cineloftsolutions.uhvati_termin.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -77,5 +74,15 @@ public class UserController {
             @RequestBody @Valid UpdateEmployeeDTO updateEmployeeDTO) {
         return userService.updateEmployee(id, updateEmployeeDTO);
     }
+
+    @PostMapping("/admin/create")
+    @Operation(
+            summary = "Registracija novog admina biznisa",
+            description = "Kreira novog korisnika sa rolom ADMIN i dodeljuje ga biznisu"
+    )
+    public ResponseEntity<?> createAdmin(@RequestBody @Valid RegisterRequestDTO request) {
+        return userService.createAdmin(request);
+    }
+
 }
 

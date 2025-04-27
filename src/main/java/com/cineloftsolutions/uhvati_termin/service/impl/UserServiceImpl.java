@@ -1,13 +1,12 @@
 package com.cineloftsolutions.uhvati_termin.service.impl;
 
-import com.cineloftsolutions.uhvati_termin.dto.CreateEmployeeDTO;
-import com.cineloftsolutions.uhvati_termin.dto.ReadUserDTO;
-import com.cineloftsolutions.uhvati_termin.dto.UpdateEmployeeDTO;
-import com.cineloftsolutions.uhvati_termin.dto.UpdateUserProfileDTO;
+import com.cineloftsolutions.uhvati_termin.dto.*;
+import com.cineloftsolutions.uhvati_termin.entity.Business;
 import com.cineloftsolutions.uhvati_termin.entity.Location;
 import com.cineloftsolutions.uhvati_termin.entity.Role;
 import com.cineloftsolutions.uhvati_termin.entity.User;
 import com.cineloftsolutions.uhvati_termin.maper.UserMapper;
+import com.cineloftsolutions.uhvati_termin.repository.BusinessRepository;
 import com.cineloftsolutions.uhvati_termin.repository.LocationRepository;
 import com.cineloftsolutions.uhvati_termin.repository.RoleRepository;
 import com.cineloftsolutions.uhvati_termin.repository.UserRepository;
@@ -29,14 +28,16 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final LocationRepository locationRepository;
+    private final BusinessRepository businessRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, LocationRepository locationRepository, UserMapper userMapper, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, LocationRepository locationRepository, BusinessRepository businessRepository, UserMapper userMapper, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.locationRepository = locationRepository;
+        this.businessRepository = businessRepository;
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
     }
@@ -119,6 +120,43 @@ public class UserServiceImpl implements UserService {
         ));
     }
 
+    @Override
+    public ResponseEntity<?> createAdmin(RegisterRequestDTO request) {
+        if (userRepository.findByEmailAndBusiness_BusinessId(request.getEmail(), request.getBusinessId()).isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
+                    "status", 409,
+                    "error", "Email je već zauzet.",
+                    "message", "Korisnik sa ovom email adresom već postoji."
+            ));
+        }
+
+        Optional<Business> businessOptional = businessRepository.findByBusinessId(request.getBusinessId());
+        if (businessOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
+                    "status", 404,
+                    "error", "Biznis nije pronađen.",
+                    "message", "Biznis sa datim ID-em ne postoji."
+            ));
+        }
+
+        Business business = businessOptional.get();
+
+        Role userRole = roleRepository.findByName("ADMIN")
+                .orElseGet(() -> roleRepository.save(new Role(null, "ADMIN")));
+
+        User user = userMapper.fromRegisterRequest(request);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole(userRole);
+        user.setBusiness(business);
+
+        userRepository.save(user);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
+                "status", 201,
+                "message", "Admin je uspešno kreiran",
+                "data", Map.of("name", user.getName(), "email", user.getEmail())
+        ));
+    }
 
     @Override
     public ResponseEntity<?> createEmployee(CreateEmployeeDTO createEmployeeDTO) {

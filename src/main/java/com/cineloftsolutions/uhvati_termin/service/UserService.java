@@ -13,6 +13,8 @@ public interface UserService {
     @Transactional(readOnly = true)
     ResponseEntity<?> getEmployeesByLocation(Long locationId);
 
+    ResponseEntity<?> createAdmin(RegisterRequestDTO request);
+
     ResponseEntity<?> createEmployee(CreateEmployeeDTO createEmployeeDTO);
     ResponseEntity<?> updateEmployee(Long employeeId, UpdateEmployeeDTO createEmployeeDTO);
 }
