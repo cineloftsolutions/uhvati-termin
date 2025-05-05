@@ -4,7 +4,6 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.*;
 
 @Data
 @Schema(description = "Zahtev za registraciju korisnika")
@@ -13,8 +12,19 @@ public class RegisterRequestDTO {
     @NotBlank(message = "Ime je obavezno")
     @Size(min = 2, max = 50, message = "Ime mora imati između 2 i 50 karaktera")
     @Pattern(regexp = "^[A-Za-zČčĆćŠšĐđŽž ]+$", message = "Ime može sadržati samo slova i razmake")
-    @Schema(description = "Puno ime korisnika", example = "Miloš Petrović")
+    @Schema(description = "Ime korisnika", example = "Miloš")
     private String name;
+
+    @NotBlank(message = "Prezime je obavezno")
+    @Size(min = 2, max = 50, message = "Prezime mora imati između 2 i 50 karaktera")
+    @Pattern(regexp = "^[A-Za-zČčĆćŠšĐđŽž ]+$", message = "Prezime može sadržati samo slova i razmake")
+    @Schema(description = "Prezime korisnika", example = "Petrović")
+    private String surname;
+
+    @NotBlank(message = "Broj telefona je obavezan")
+    @Pattern(regexp = "^\\+?[0-9\\s-]{6,20}$", message = "Broj telefona nije u ispravnom formatu")
+    @Schema(description = "Kontakt telefon", example = "+381601234567")
+    private String phone;
 
     @NotBlank(message = "Email je obavezan")
     @Email(message = "Email nije u ispravnom formatu")
@@ -35,4 +45,5 @@ public class RegisterRequestDTO {
     @Schema(description = "Biznis ID", example = "1")
     private Long businessId;
 }
+
 

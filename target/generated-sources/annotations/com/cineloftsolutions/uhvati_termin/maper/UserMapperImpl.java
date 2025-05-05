@@ -48,18 +48,20 @@ public class UserMapperImpl implements UserMapper {
 
     @Override
     public User fromRegisterRequest(RegisterRequestDTO dto) {
-        if ( dto == null ) {
+        if (dto == null) {
             return null;
         }
 
         User user = new User();
-
-        user.setName( dto.getName() );
-        user.setEmail( dto.getEmail() );
-        user.setPassword( dto.getPassword() );
+        user.setName(dto.getName());
+        user.setSurname(dto.getSurname());
+        user.setPhone(dto.getPhone());
+        user.setEmail(dto.getEmail());
+        user.setPassword(dto.getPassword());
 
         return user;
     }
+
 
     @Override
     public ReadUserDTO toReadUserDTO(User user) {
