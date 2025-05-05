@@ -74,6 +74,8 @@ public class UserMapperImpl implements UserMapper {
         readUserDTO.setBusinessId( userBusinessBusinessId( user ) );
         readUserDTO.setId( user.getId() );
         readUserDTO.setName( user.getName() );
+        readUserDTO.setSurname( user.getSurname() );
+        readUserDTO.setPhone( user.getPhone() );
         readUserDTO.setEmail( user.getEmail() );
         readUserDTO.setRole( map( user.getRole() ) );
 
